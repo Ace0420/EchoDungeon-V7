@@ -2202,7 +2202,7 @@
             
             const regenRing = game.player.equippedRings.find(r => r === 'Ring of Regeneration');
             if (regenRing) {
-                const regenAmount = 5;
+                const regenAmount = 50;
                 game.player.health = Math.min(game.player.maxHealth, game.player.health + regenAmount);
                 messages.push(`Your Ring of Regeneration heals you for ${regenAmount} health!`);
             }
@@ -2580,4 +2580,5 @@
 </body>
 
 </html>
+
 
