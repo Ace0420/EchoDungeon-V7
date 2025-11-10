@@ -750,7 +750,7 @@
         function levelUp() {
             game.player.level++;
             game.player.experience -= game.player.experienceToNext;
-            game.player.experienceToNext = Math.floor(game.player.experienceToNext 1.20);
+            game.player.experienceToNext = Math.floor(game.player.experienceToNext * 1.20);
             
             const healthGain = 20;
             const manaGain = 10;
@@ -2582,6 +2582,7 @@ if (regenRingCount > 0) {
 </body>
 
 </html>
+
 
 
 
