@@ -324,20 +324,20 @@
         };
 
         const enemies = {
-            goblin: { name: 'Goblin', health: 30, damage: 8, gold: 5, exp: 25, fleeChance: 0.8 },
-            skeleton: { name: 'Skeleton', health: 40, damage: 10, gold: 8, exp: 30, fleeChance: 0.7 },
-            orc: { name: 'Orc', health: 60, damage: 15, gold: 12, exp: 50, fleeChance: 0.5 },
-            wraith: { name: 'Wraith', health: 50, damage: 18, gold: 15, exp: 75, fleeChance: 0.6 },
-            troll: { name: 'Troll', health: 80, damage: 20, gold: 20, exp: 65, fleeChance: 0.4, regenerate: 5 },
-            dragon: { name: 'Dragon', health: 350, damage: 30, gold: 50, exp: 450, fleeChance: 0.1 },
-            demon: { name: 'Demon', health: 120, damage: 28, gold: 45, exp: 80, fleeChance: 0.3 },
-            vampire: { name: 'Vampire', health: 100, damage: 25, gold: 40, exp: 100, fleeChance: 0.4, regenerate: 8 },
-            orcChieftain: { name: 'Orc Chieftain', health: 100, damage: 22, gold: 25, exp: 65, fleeChance: 0.3 },
-            ancientWraith: { name: 'Ancient Wraith', health: 90, damage: 26, gold: 30, exp: 80, fleeChance: 0.4 },
-            elderTroll: { name: 'Elder Troll', health: 150, damage: 28, gold: 40, exp: 100, fleeChance: 0.2, regenerate: 10 },
-            archDemon: { name: 'Arch Demon', health: 180, damage: 35, gold: 70, exp: 160, fleeChance: 0.2 },
-            hydra: { name: 'Hydra', health: 140, damage: 30, exp: 125, fleeChance: 0.3, regenerate: 12 },
-            phoenixGuardian: { name: 'Phoenix Guardian', health: 130, damage: 32, gold: 60, exp: 145, fleeChance: 0.3, regenerate: 15 },
+            goblin: { name: 'Goblin', health: 130, damage: 18, gold: 5, exp: 25, fleeChance: 0.8 },
+            skeleton: { name: 'Skeleton', health: 140, damage: 20, gold: 8, exp: 30, fleeChance: 0.7 },
+            orc: { name: 'Orc', health: 160, damage: 35, gold: 12, exp: 50, fleeChance: 0.5 },
+            wraith: { name: 'Wraith', health: 150, damage: 38, gold: 15, exp: 75, fleeChance: 0.6 },
+            troll: { name: 'Troll', health: 180, damage: 50, gold: 20, exp: 65, fleeChance: 0.4, regenerate: 5 },
+            dragon: { name: 'Dragon', health: 350, damage: 75, gold: 50, exp: 450, fleeChance: 0.1 },
+            demon: { name: 'Demon', health: 190, damage: 58, gold: 45, exp: 80, fleeChance: 0.3 },
+            vampire: { name: 'Vampire', health: 200, damage: 95, gold: 40, exp: 100, fleeChance: 0.4, regenerate: 8 },
+            orcChieftain: { name: 'Orc Chieftain', health: 190, damage: 72, gold: 25, exp: 65, fleeChance: 0.3 },
+            ancientWraith: { name: 'Ancient Wraith', health: 190, damage: 96, gold: 30, exp: 80, fleeChance: 0.4 },
+            elderTroll: { name: 'Elder Troll', health: 250, damage: 28, gold: 40, exp: 100, fleeChance: 0.2, regenerate: 10 },
+            archDemon: { name: 'Arch Demon', health: 280, damage: 95, gold: 70, exp: 160, fleeChance: 0.2 },
+            hydra: { name: 'Hydra', health: 240, damage: 130, exp: 125, fleeChance: 0.3, regenerate: 12 },
+            phoenixGuardian: { name: 'Phoenix Guardian', health: 230, damage: 132, gold: 60, exp: 145, fleeChance: 0.3, regenerate: 15 },
             lichKing: { name: 'Lich King', health: 160, damage: 38, gold: 80, exp: 185, fleeChance: 0.1, regenerate: 10 }
         };
 
@@ -750,7 +750,7 @@
         function levelUp() {
             game.player.level++;
             game.player.experience -= game.player.experienceToNext;
-            game.player.experienceToNext = Math.floor(game.player.experienceToNext * 1.10);
+            game.player.experienceToNext = Math.floor(game.player.experienceToNext 1.20);
             
             const healthGain = 20;
             const manaGain = 10;
@@ -1162,10 +1162,10 @@
                 });
             } else if (spellToCast.type === 'timestop') {
                 game.combat.enemy.frozen = true;
-                game.combat.enemy.timestopTurns = 3;
+                game.combat.enemy.timestopTurns = 2;
                 if (game.combat.secondEnemy && game.combat.secondEnemy.health > 0) {
                     game.combat.secondEnemy.frozen = true;
-                    game.combat.secondEnemy.timestopTurns = 3;
+                    game.combat.secondEnemy.timestopTurns = 2;
                 }
                 speakSequence([
                     `You cast Time Stop!`,
@@ -2200,12 +2200,14 @@
         function enemyTurn() {
             let messages = [];
             
-            const regenRing = game.player.equippedRings.find(r => r === 'Ring of Regeneration');
-            if (regenRing) {
-                const regenAmount = 50;
-                game.player.health = Math.min(game.player.maxHealth, game.player.health + regenAmount);
-                messages.push(`Your Ring of Regeneration heals you for ${regenAmount} health!`);
-            }
+            const regenRingCount = game.player.equippedRings.filter(r => r === 'Ring of Regeneration').length;
+if (regenRingCount > 0) {
+    const regenAmount = 50 * regenRingCount;
+    const oldHealth = game.player.health;
+    game.player.health = Math.min(game.player.maxHealth, game.player.health + regenAmount);
+    const actualHeal = game.player.health - oldHealth;
+    messages.push(`Your Ring${regenRingCount > 1 ? 's' : ''} of Regeneration heal${regenRingCount === 1 ? 's' : ''} you for ${actualHeal} health!`);
+}
             
             if (game.combat.enemy.frozen) {
                 if (game.combat.enemy.timestopTurns) {
@@ -2580,5 +2582,6 @@
 </body>
 
 </html>
+
 
 
