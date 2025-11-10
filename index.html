@@ -1249,83 +1249,85 @@
         }
 
         function equipWeaponOrArmor(command) {
-            const weaponNames = equipment.weapons.map(w => w.name.toLowerCase());
-            const armorNames = equipment.armor.map(a => a.name.toLowerCase());
-            const shieldNames = equipment.shields ? equipment.shields.map(s => s.name.toLowerCase()) : [];
-            
-            let itemToEquip = null;
-            let itemType = null;
-            
-            for (let item of game.player.inventory) {
-                if (command.includes(item.toLowerCase())) {
-                    if (weaponNames.includes(item.toLowerCase())) {
-                        itemToEquip = item;
-                        itemType = 'weapon';
-                        break;
-                    } else if (armorNames.includes(item.toLowerCase())) {
-                        itemToEquip = item;
-                        itemType = 'armor';
-                        break;
-                    } else if (shieldNames.includes(item.toLowerCase())) {
-                        itemToEquip = item;
-                        itemType = 'shield';
-                        break;
-                    }
-                }
+    let itemToEquip = null;
+    let itemType = null;
+    
+    // Search through inventory for matching item
+    for (let item of game.player.inventory) {
+        if (command.includes(item.toLowerCase())) {
+            // Check if it's a weapon
+            if (equipment.weapons.some(w => w.name === item)) {
+                itemToEquip = item;
+                itemType = 'weapon';
+                break;
             }
-            
-            if (!itemToEquip) {
-                speak('You do not have that equipment. Check your inventory.');
-                return;
+            // Check if it's armor
+            else if (equipment.armor.some(a => a.name === item)) {
+                itemToEquip = item;
+                itemType = 'armor';
+                break;
             }
-            
-            const itemIndex = game.player.inventory.indexOf(itemToEquip);
-            game.player.inventory.splice(itemIndex, 1);
-            
-            if (itemType === 'weapon' && game.player.weapon) {
-                game.player.inventory.push(game.player.weapon);
-            } else if (itemType === 'armor' && game.player.armor) {
-                game.player.inventory.push(game.player.armor);
-            } else if (itemType === 'shield' && game.player.shield) {
-                game.player.inventory.push(game.player.shield);
+            // Check if it's a shield
+            else if (equipment.shields && equipment.shields.some(s => s.name === item)) {
+                itemToEquip = item;
+                itemType = 'shield';
+                break;
             }
-            
-            if (itemType === 'weapon') {
-                game.player.weapon = itemToEquip;
-                const weaponData = equipment.weapons.find(w => w.name === itemToEquip);
-                game.player.baseAttack = weaponData.attack;
-                
-                let equipMessage = `You equip ${itemToEquip}. Attack is now ${weaponData.attack}.`;
-                
-                if (weaponData.mana && game.player.class === 'mage') {
-                    game.player.maxMana += weaponData.mana;
-                    game.player.mana += weaponData.mana;
-                    equipMessage += ` Max mana increased by ${weaponData.mana}!`;
-                }
-                
-                speak(equipMessage);
-            } else if (itemType === 'armor') {
-                game.player.armor = itemToEquip;
-                const armorData = equipment.armor.find(a => a.name === itemToEquip);
-                
-                game.player.defense = armorData.defense;
-                
-                if (game.player.shield && equipment.shields) {
-                    const shieldData = equipment.shields.find(s => s.name === game.player.shield);
-                    if (shieldData) {
-                        game.player.defense += shieldData.defense;
-                    }
-                }
-                speak(`You equip ${itemToEquip}. Defense is now ${game.player.defense}.`);
-            } else if (itemType === 'shield') {
-                game.player.shield = itemToEquip;
-                const shieldData = equipment.shields.find(s => s.name === itemToEquip);
-                
-                const armorData = equipment.armor.find(a => a.name === game.player.armor);
-                game.player.defense = (armorData ? armorData.defense : 0) + shieldData.defense;
-                
-                speak(`You equip ${itemToEquip}. Defense is now ${game.player.defense}.`);
+        }
+    }
+    
+    if (!itemToEquip) {
+        speak('You do not have that item. Check inventory.');
+        return;
+    }
+    
+    const itemIndex = game.player.inventory.indexOf(itemToEquip);
+    game.player.inventory.splice(itemIndex, 1);
+    
+    if (itemType === 'weapon' && game.player.weapon) {
+        game.player.inventory.push(game.player.weapon);
+    } else if (itemType === 'armor' && game.player.armor) {
+        game.player.inventory.push(game.player.armor);
+    } else if (itemType === 'shield' && game.player.shield) {
+        game.player.inventory.push(game.player.shield);
+    }
+    
+    if (itemType === 'weapon') {
+        game.player.weapon = itemToEquip;
+        const weaponData = equipment.weapons.find(w => w.name === itemToEquip);
+        game.player.baseAttack = weaponData.attack;
+        
+        let equipMessage = `You equip ${itemToEquip}. Attack is now ${weaponData.attack}.`;
+        
+        if (weaponData.mana && game.player.class === 'mage') {
+            game.player.maxMana += weaponData.mana;
+            game.player.mana += weaponData.mana;
+            equipMessage += ` Max mana increased by ${weaponData.mana}!`;
+        }
+        
+        speak(equipMessage);
+    } else if (itemType === 'armor') {
+        game.player.armor = itemToEquip;
+        const armorData = equipment.armor.find(a => a.name === itemToEquip);
+        
+        game.player.defense = armorData.defense;
+        
+        if (game.player.shield && equipment.shields) {
+            const shieldData = equipment.shields.find(s => s.name === game.player.shield);
+            if (shieldData) {
+                game.player.defense += shieldData.defense;
             }
+        }
+        speak(`You equip ${itemToEquip}. Defense is now ${game.player.defense}.`);
+    } else if (itemType === 'shield') {
+        game.player.shield = itemToEquip;
+        const shieldData = equipment.shields.find(s => s.name === itemToEquip);
+        
+        const armorData = equipment.armor.find(a => a.name === game.player.armor);
+        game.player.defense = (armorData ? armorData.defense : 0) + shieldData.defense;
+        
+        speak(`You equip ${itemToEquip}. Defense is now ${game.player.defense}.`);
+    }
         }
 
         function equipItem(command) {
@@ -2582,6 +2584,7 @@ if (regenRingCount > 0) {
 </body>
 
 </html>
+
 
 
 
